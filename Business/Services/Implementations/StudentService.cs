@@ -21,10 +21,9 @@ namespace DormitoryManagementSystem.Business.Services.Implementations
             => await _unitOfWork.Students.GetByIdAsync(id);
 
         public async Task<Student?> GetStudentByNumberAsync(string studentNumber)
-        {
-            var students = await _unitOfWork.Students.FindAsync(s => s.StudentNumber == studentNumber);
-            return students.FirstOrDefault();
-        }
+            => await _unitOfWork.Students.Query()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(s => s.StudentNumber == studentNumber);
 
         public async Task CreateStudentAsync(Student student)
         {

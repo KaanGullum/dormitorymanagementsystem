@@ -1,6 +1,7 @@
 using DormitoryManagementSystem.Business.Services.Interfaces;
 using DormitoryManagementSystem.DataAccess.Repositories;
 using DormitoryManagementSystem.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace DormitoryManagementSystem.Business.Services.Implementations
 {
@@ -23,10 +24,9 @@ namespace DormitoryManagementSystem.Business.Services.Implementations
             => await _unitOfWork.Users.GetByIdAsync(id);
 
         public async Task<User?> GetUserByUsernameAsync(string username)
-        {
-            var users = await _unitOfWork.Users.FindAsync(u => u.Username == username);
-            return users.FirstOrDefault();
-        }
+            => await _unitOfWork.Users.Query()
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Username == username);
 
         public async Task CreateUserAsync(User user)
         {
