@@ -9,30 +9,38 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DMS - Sign In</title>
+    <title>Residence Hub - Sign In</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-    <style>
-        body { background: #f0f2f5; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .login-card { max-width: 900px; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
-        .info-panel { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); }
-    </style>
+    <link href="~/css/site.css" rel="stylesheet" />
 </head>
-<body>
-    <div class="container">
+<body class="login-screen">
+    <div class="container login-shell">
         <div class="card login-card mx-auto">
             <div class="row g-0">
-                <div class="col-md-5 info-panel text-white p-4 d-flex flex-column justify-content-center">
+                <div class="col-lg-5 login-brand-panel d-flex flex-column justify-content-between">
                     <div>
-                        <i class="bi bi-building-fill display-4 mb-3 d-block text-white-50"></i>
-                        <h3 class="fw-bold mb-2">Dormitory Management System</h3>
-                        <p class="text-white-50">Secure student and room administration portal</p>
+                        <div class="login-brand-badge">
+                            <i class="bi bi-buildings-fill"></i>
+                        </div>
+                        <p class="eyebrow mb-2">Accommodation Management</p>
+                        <h1 class="fw-bold mb-3">Dormitory Management System</h1>
+                        <p class="mb-0">Student records, room allocation, payment tracking, maintenance requests, and reporting in a single system.</p>
+                    </div>
+
+                    <div class="login-module-list">
+                        <span class="login-module-pill">Student Records</span>
+                        <span class="login-module-pill">Room Allocation</span>
+                        <span class="login-module-pill">Payment Tracking</span>
+                        <span class="login-module-pill">Maintenance</span>
+                        <span class="login-module-pill">Reporting</span>
                     </div>
                 </div>
 
-                <div class="col-md-7 bg-white p-5">
-                    <h4 class="fw-bold mb-1">Sign In</h4>
-                    <p class="text-muted small mb-4">Use your university-issued credentials</p>
+                <div class="col-lg-7 login-form-panel">
+                    <p class="eyebrow mb-2">System Access</p>
+                    <h2 class="fw-bold mb-2">Sign in</h2>
+                    <p class="login-hint mb-4">Use your authorized account credentials.</p>
 
                     @if (!string.IsNullOrEmpty(Model.ErrorMessage))
                     {
@@ -44,19 +52,17 @@
                     <form asp-action="Login" method="post">
                         @Html.AntiForgeryToken()
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold">Username</label>
+                            <label class="form-label small">Username</label>
                             <input asp-for="Username" class="form-control" placeholder="Enter your username" required />
                         </div>
                         <div class="mb-4">
-                            <label class="form-label small fw-semibold">Password</label>
+                            <label class="form-label small">Password</label>
                             <input asp-for="Password" type="password" class="form-control" placeholder="Enter your password" required />
                         </div>
-                        <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">Login</button>
+                        <button type="submit" class="btn btn-primary w-100 py-3">Access System</button>
                     </form>
 
-                    <p class="text-center text-muted small mt-3">
-                        Forgot password? Contact system admin.
-                    </p>
+                    <p class="login-hint small mt-3 mb-0">Authorized access for staff and student users.</p>
                 </div>
             </div>
         </div>
