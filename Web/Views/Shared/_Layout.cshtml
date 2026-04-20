@@ -91,6 +91,24 @@
                             <span class="sidebar-text">Maintenance</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link sidebar-link @(currentController == "Notification" ? "active" : "")"
+                           asp-controller="Notification" asp-action="Index">
+                            <i class="bi bi-bell-fill"></i>
+                            <span class="sidebar-text">Notifications</span>
+                            @await Component.InvokeAsync("NotificationBell")
+                        </a>
+                    </li>
+                    @if (isStaff)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link sidebar-link @(currentController == "Document" ? "active" : "")"
+                               asp-controller="Document" asp-action="Index">
+                                <i class="bi bi-folder2-open"></i>
+                                <span class="sidebar-text">Documents</span>
+                            </a>
+                        </li>
+                    }
                     @if (isStaff)
                     {
                         <li class="nav-item">

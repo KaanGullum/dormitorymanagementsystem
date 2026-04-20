@@ -213,6 +213,11 @@ h6,
     font-size: 1rem;
 }
 
+.sidebar-link .badge {
+    margin-left: auto;
+    box-shadow: none;
+}
+
 .sidebar-link:hover {
     color: #ffffff !important;
     background: rgba(255, 245, 233, 0.08);
