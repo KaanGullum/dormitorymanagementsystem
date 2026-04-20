@@ -1,0 +1,47 @@
+@model Payment
+@{
+    ViewData["Title"] = "New Payment";
+    var students = ViewBag.Students as IEnumerable<Student> ?? new List<Student>();
+}
+
+<h3 class="fw-bold mb-4">Create Payment Record</h3>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Student <span class="text-danger">*</span></label>
+                    <select asp-for="StudentId" class="form-select">
+                        <option value="">-- Select Student --</option>
+                        @foreach (var s in students)
+                        {
+                            <option value="@s.StudentId" selected="@(Model.StudentId == s.StudentId)">@s.StudentNumber - @s.FullName</option>
+                        }
+                    </select>
+                    <span asp-validation-for="StudentId" class="text-danger small"></span>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Amount (TL) <span class="text-danger">*</span></label>
+                    <input asp-for="Amount" type="number" step="0.01" class="form-control" required />
+                    <span asp-validation-for="Amount" class="text-danger small"></span>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Due Date <span class="text-danger">*</span></label>
+                    <input asp-for="DueDate" type="date" class="form-control" required />
+                    <span asp-validation-for="DueDate" class="text-danger small"></span>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold">Semester</label>
+                    <input asp-for="Semester" class="form-control" placeholder="e.g. 2025-2026 Spring" />
+                </div>
+            </div>
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle me-1"></i>Create</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

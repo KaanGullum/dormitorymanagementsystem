@@ -1,0 +1,141 @@
+@{
+    // Role-based menu visibility - Student does not see admin items
+    bool isStudent = User.IsInRole("Student");
+    bool isStaff = User.IsInRole("SystemAdmin") || User.IsInRole("DormitoryManager")
+                || User.IsInRole("FinanceOfficer") || User.IsInRole("DormitoryStaff");
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - DMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="~/css/site.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="d-flex">
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <nav id="sidebar" class="bg-dark text-white vh-100 position-fixed overflow-auto" style="width: 220px; z-index: 1000;">
+                <div class="p-3 border-bottom border-secondary">
+                    <h4 class="mb-0 fw-bold">DMS</h4>
+                    <small class="text-white-50">Dormitory Management</small>
+                </div>
+                <ul class="nav flex-column p-2">
+                    <li class="nav-item">
+                        <a class="nav-link text-white @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active bg-primary rounded" : "")"
+                           asp-controller="Home" asp-action="Index">
+                            <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                        </a>
+                    </li>
+                    @if (isStaff)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-white @(ViewContext.RouteData.Values["controller"]?.ToString() == "Student" ? "active bg-primary rounded" : "")"
+                               asp-controller="Student" asp-action="Index">
+                                <i class="bi bi-people me-2"></i>Students
+                            </a>
+                        </li>
+                    }
+                    <li class="nav-item">
+                        <a class="nav-link text-white @(ViewContext.RouteData.Values["controller"]?.ToString() == "Room" ? "active bg-primary rounded" : "")"
+                           asp-controller="Room" asp-action="Index">
+                            <i class="bi bi-door-open me-2"></i>Rooms
+                        </a>
+                    </li>
+                    @if (isStaff)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-white @(ViewContext.RouteData.Values["controller"]?.ToString() == "Payment" ? "active bg-primary rounded" : "")"
+                               asp-controller="Payment" asp-action="Index">
+                                <i class="bi bi-credit-card me-2"></i>Payments
+                            </a>
+                        </li>
+                    }
+                    <li class="nav-item">
+                        <a class="nav-link text-white @(ViewContext.RouteData.Values["controller"]?.ToString() == "Maintenance" ? "active bg-primary rounded" : "")"
+                           asp-controller="Maintenance" asp-action="Index">
+                            <i class="bi bi-tools me-2"></i>Maintenance
+                        </a>
+                    </li>
+                    @if (isStaff)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-white @(ViewContext.RouteData.Values["controller"]?.ToString() == "Report" && ViewContext.RouteData.Values["action"]?.ToString() != "AuditLog" ? "active bg-primary rounded" : "")"
+                               asp-controller="Report" asp-action="Index">
+                                <i class="bi bi-graph-up me-2"></i>Reports
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white @(ViewContext.RouteData.Values["controller"]?.ToString() == "Settings" ? "active bg-primary rounded" : "")"
+                               asp-controller="Settings" asp-action="Index">
+                                <i class="bi bi-gear me-2"></i>Settings
+                            </a>
+                        </li>
+                    }
+                    @if (User.IsInRole("SystemAdmin"))
+                    {
+                        <li class="nav-item mt-2 pt-2 border-top border-secondary">
+                            <small class="text-white-50 px-2">ADMIN</small>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white @(ViewContext.RouteData.Values["controller"]?.ToString() == "User" ? "active bg-primary rounded" : "")"
+                               asp-controller="User" asp-action="Index">
+                                <i class="bi bi-person-gear me-2"></i>Users
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white @(ViewContext.RouteData.Values["action"]?.ToString() == "AuditLog" ? "active bg-primary rounded" : "")"
+                               asp-controller="Report" asp-action="AuditLog">
+                                <i class="bi bi-shield-check me-2"></i>Audit Logs
+                            </a>
+                        </li>
+                    }
+                </ul>
+                <div class="p-3 border-top border-secondary mt-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <small class="text-white-50 text-truncate">@User.Identity?.Name</small>
+                        <form asp-controller="Auth" asp-action="Logout" method="post">
+                            <button type="submit" class="btn btn-sm btn-outline-light" title="Logout">
+                                <i class="bi bi-box-arrow-right"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </nav>
+
+            <main class="flex-grow-1" style="margin-left: 220px;">
+                <div class="p-4">
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            @TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show">
+                            @TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                    @RenderBody()
+                </div>
+            </main>
+        }
+        else
+        {
+            <main class="w-100">
+                @RenderBody()
+            </main>
+        }
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

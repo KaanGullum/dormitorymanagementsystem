@@ -1,0 +1,82 @@
+@model PaymentReportViewModel
+@{
+    ViewData["Title"] = "Payment & Maintenance Report";
+}
+
+<div class="mb-4">
+    <h3 class="fw-bold mb-0">Payment & Maintenance Report</h3>
+    <p class="text-muted">Combined finance and operations follow-up screen</p>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-5">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-semibold">
+                <i class="bi bi-cash-stack me-1"></i>Semester Payment Summary
+            </div>
+            <div class="card-body">
+                <table class="table table-sm table-borderless mb-0">
+                    <tr>
+                        <td class="text-muted">Total</td>
+                        <td class="fw-bold text-end">TL @Model.TotalAmount.ToString("N0")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Collected</td>
+                        <td class="fw-bold text-success text-end">TL @Model.CollectedAmount.ToString("N0")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Pending</td>
+                        <td class="fw-bold text-warning text-end">TL @Model.PendingAmount.ToString("N0")</td>
+                    </tr>
+                    <tr class="border-top">
+                        <td class="text-muted">Penalties</td>
+                        <td class="fw-bold text-danger text-end">TL @Model.PenaltyAmount.ToString("N0")</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-semibold">
+                <i class="bi bi-tools me-1"></i>Open Maintenance Requests
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Room</th>
+                            <th>Issue</th>
+                            <th>Priority</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var req in Model.OpenRequests)
+                        {
+                            <tr>
+                                <td>@req.Room?.RoomNumber</td>
+                                <td>@req.IssueTitle</td>
+                                <td>
+                                    <span class="badge @(req.Priority == "High" || req.Priority == "Critical" ? "bg-danger" : req.Priority == "Medium" ? "bg-warning text-dark" : "bg-info")">
+                                        @req.Priority
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge @(req.Status == "Open" ? "bg-primary" : req.Status == "InProgress" ? "bg-warning text-dark" : "bg-info")">
+                                        @req.Status
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                        @if (!Model.OpenRequests.Any())
+                        {
+                            <tr><td colspan="4" class="text-center text-muted py-3">No open requests.</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

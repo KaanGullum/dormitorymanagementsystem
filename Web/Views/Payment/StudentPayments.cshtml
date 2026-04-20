@@ -1,0 +1,94 @@
+@model IEnumerable<Payment>
+@{
+    ViewData["Title"] = "Student Payments";
+    var student = ViewBag.Student as Student;
+    var balance = (decimal)(ViewBag.Balance ?? 0m);
+    var penalties = ViewBag.Penalties as IEnumerable<Penalty> ?? new List<Penalty>();
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold mb-0">@student?.FullName - Payments</h3>
+        <small class="text-muted">@student?.StudentNumber</small>
+    </div>
+    <a asp-controller="Student" asp-action="Index" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>Back
+    </a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <p class="text-muted small mb-1">Outstanding Balance</p>
+                <h3 class="fw-bold @(balance > 0 ? "text-danger" : "text-success")">TL @balance.ToString("N0")</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-header bg-white fw-semibold">Payments</div>
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr><th>Amount</th><th>Due Date</th><th>Paid Date</th><th>Semester</th><th>Status</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">TL @p.Amount.ToString("N0")</td>
+                        <td>@p.DueDate.ToString("dd/MM/yyyy")</td>
+                        <td>@(p.PaidDate?.ToString("dd/MM/yyyy") ?? "-")</td>
+                        <td>@(p.Semester ?? "-")</td>
+                        <td>
+                            <span class="badge @(p.Status == "Paid" ? "bg-success" : p.Status == "Overdue" ? "bg-danger" : "bg-warning text-dark")">
+                                @p.Status
+                            </span>
+                        </td>
+                        <td>
+                            @if (p.Status != "Paid")
+                            {
+                                <form asp-action="RecordPayment" method="post" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="paymentId" value="@p.PaymentId" />
+                                    <button type="submit" class="btn btn-sm btn-success" title="Pay"><i class="bi bi-check-lg"></i></button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (penalties.Any())
+{
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white fw-semibold text-danger">Penalties</div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr><th>Reason</th><th>Amount</th><th>Due Date</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var pen in penalties)
+                    {
+                        <tr>
+                            <td>@pen.Reason</td>
+                            <td class="fw-semibold">TL @pen.Amount.ToString("N0")</td>
+                            <td>@pen.DueDate.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <span class="badge @(pen.Status == "Paid" ? "bg-success" : "bg-danger")">
+                                    @pen.Status
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

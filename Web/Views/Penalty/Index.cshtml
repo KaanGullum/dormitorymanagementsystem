@@ -1,0 +1,114 @@
+@model IEnumerable<Penalty>
+@{
+    ViewData["Title"] = "Penalties";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold mb-0">Penalties</h3>
+        <p class="text-muted mb-0">Dormitory penalty records</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i>New Penalty
+    </a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <p class="text-muted small mb-1">Total Pending Amount</p>
+                <h3 class="fw-bold text-danger mb-0">TL @(((decimal)ViewBag.TotalPending).ToString("N2"))</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <p class="text-muted small mb-1">Total Records</p>
+                <h3 class="fw-bold mb-0">@Model.Count()</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <p class="text-muted small mb-1">Paid</p>
+                <h3 class="fw-bold text-success mb-0">@Model.Count(p => p.Status == "Paid")</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Student No</th>
+                    <th>Full Name</th>
+                    <th>Reason</th>
+                    <th class="text-end">Amount</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td class="fw-semibold">@p.Student?.StudentNumber</td>
+                        <td>@p.Student?.FullName</td>
+                        <td class="small">@p.Reason</td>
+                        <td class="text-end fw-semibold">TL @p.Amount.ToString("N2")</td>
+                        <td class="small">@p.DueDate.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            @if (p.Status == "Paid")
+                            {
+                                <span class="badge bg-success">Paid</span>
+                            }
+                            else if (p.Status == "Overdue")
+                            {
+                                <span class="badge bg-danger">Overdue</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm">
+                                @if (p.Status != "Paid")
+                                {
+                                    <form asp-action="MarkPaid" asp-route-id="@p.PenaltyId" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-outline-success btn-sm" title="Mark Paid">
+                                            <i class="bi bi-check-circle"></i>
+                                        </button>
+                                    </form>
+                                }
+                                @if (User.IsInRole("SystemAdmin"))
+                                {
+                                    <form asp-action="Delete" asp-route-id="@p.PenaltyId" method="post" class="d-inline"
+                                          onsubmit="return confirm('This penalty record will be deleted. Are you sure?')">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">No penalty records yet.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

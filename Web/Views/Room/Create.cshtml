@@ -1,0 +1,53 @@
+@model Room
+@{
+    ViewData["Title"] = "New Room";
+    var buildings = ViewBag.Buildings as IEnumerable<Building> ?? new List<Building>();
+}
+
+<h3 class="fw-bold mb-4">Create New Room</h3>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Room Number <span class="text-danger">*</span></label>
+                    <input asp-for="RoomNumber" class="form-control" placeholder="e.g. A-203" required />
+                    <span asp-validation-for="RoomNumber" class="text-danger small"></span>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Building <span class="text-danger">*</span></label>
+                    <select asp-for="BuildingId" class="form-select">
+                        @foreach (var b in buildings)
+                        {
+                            <option value="@b.BuildingId">@b.BuildingName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold">Floor</label>
+                    <input asp-for="FloorNo" type="number" class="form-control" min="0" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold">Capacity</label>
+                    <input asp-for="Capacity" type="number" class="form-control" min="1" max="8" value="4" />
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold">Room Type</label>
+                    <select asp-for="RoomType" class="form-select">
+                        <option value="Single">Single</option>
+                        <option value="Double">Double</option>
+                        <option value="Triple">Triple</option>
+                        <option value="Quad" selected>Quad</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle me-1"></i>Create Room</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

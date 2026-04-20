@@ -1,0 +1,57 @@
+@model MaintenanceRequest
+@{
+    ViewData["Title"] = "New Maintenance Request";
+    var rooms = ViewBag.Rooms as IEnumerable<Room> ?? new List<Room>();
+    var students = ViewBag.Students as IEnumerable<Student> ?? new List<Student>();
+}
+
+<h3 class="fw-bold mb-4">Create Maintenance Request</h3>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Room <span class="text-danger">*</span></label>
+                    <select asp-for="RoomId" class="form-select" required>
+                        <option value="">-- Select Room --</option>
+                        @foreach (var r in rooms)
+                        {
+                            <option value="@r.RoomId">@r.RoomNumber (@r.Building?.BuildingName)</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Reported By <span class="text-danger">*</span></label>
+                    <select asp-for="ReportedByStudentId" class="form-select" required>
+                        <option value="">-- Select Student --</option>
+                        @foreach (var s in students)
+                        {
+                            <option value="@s.StudentId">@s.StudentNumber - @s.FullName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Priority</label>
+                    <select asp-for="Priority" class="form-select">
+                        <option value="Low">Low</option>
+                        <option value="Medium" selected>Medium</option>
+                        <option value="High">High</option>
+                        <option value="Critical">Critical</option>
+                    </select>
+                </div>
+                <div class="col-md-12">
+                    <label class="form-label fw-semibold">Issue Title <span class="text-danger">*</span></label>
+                    <input asp-for="IssueTitle" class="form-control" placeholder="e.g. Water leakage, Heater issue, Door lock..." required />
+                    <span asp-validation-for="IssueTitle" class="text-danger small"></span>
+                </div>
+            </div>
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle me-1"></i>Submit Request</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

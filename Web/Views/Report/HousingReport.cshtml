@@ -1,0 +1,153 @@
+@model HousingReportViewModel
+@{
+    ViewData["Title"] = "Housing Report";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold mb-0">Housing Report</h3>
+        <p class="text-muted mb-0">Dormitory housing records - active, checked-out and transferred students</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>Reports
+    </a>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <p class="text-muted small mb-1">Total Records</p>
+                <h3 class="fw-bold mb-0">@Model.Rows.Count()</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <p class="text-muted small mb-1">Active</p>
+                <h3 class="fw-bold text-success mb-0">@Model.TotalActive</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <p class="text-muted small mb-1">Checked Out</p>
+                <h3 class="fw-bold text-secondary mb-0">@Model.TotalCheckedOut</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <p class="text-muted small mb-1">Transferred</p>
+                <h3 class="fw-bold text-info mb-0">@Model.TotalTransferred</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mb-3">
+    <div class="card-body py-2">
+        <form asp-action="HousingReport" method="get" class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small">Building</label>
+                <select name="building" class="form-select form-select-sm">
+                    <option value="">All Buildings</option>
+                    @foreach (var b in Model.Buildings)
+                    {
+                        <option value="@b.BuildingName" selected="@(Model.FilterBuilding == b.BuildingName)">@b.BuildingName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">Student Year</label>
+                <select name="year" class="form-select form-select-sm">
+                    <option value="">All</option>
+                    @for (int y = 1; y <= 6; y++)
+                    {
+                        <option value="@y" selected="@(Model.FilterYear == y)">@y</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label small">Housing Status</label>
+                <select name="status" class="form-select form-select-sm">
+                    <option value="">All</option>
+                    <option value="Active" selected="@(Model.FilterStatus == "Active")">Active</option>
+                    <option value="CheckedOut" selected="@(Model.FilterStatus == "CheckedOut")">Checked Out</option>
+                    <option value="Transferred" selected="@(Model.FilterStatus == "Transferred")">Transferred</option>
+                </select>
+            </div>
+            <div class="col-md-4 d-flex gap-2">
+                <button type="submit" class="btn btn-sm btn-primary"><i class="bi bi-funnel me-1"></i>Filter</button>
+                <a asp-action="HousingReport" class="btn btn-sm btn-outline-secondary">Reset</a>
+                <button type="button" class="btn btn-sm btn-outline-success" onclick="window.print()">
+                    <i class="bi bi-printer me-1"></i>Print
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0 align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Student No</th>
+                    <th>Full Name</th>
+                    <th>Program</th>
+                    <th class="text-center">Year</th>
+                    <th>Building</th>
+                    <th>Room</th>
+                    <th>Type</th>
+                    <th>Check-in</th>
+                    <th>Check-out</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var row in Model.Rows)
+                {
+                    <tr>
+                        <td class="fw-semibold">@row.StudentNumber</td>
+                        <td>@row.StudentName</td>
+                        <td class="small text-muted">@row.Program</td>
+                        <td class="text-center">@row.StudentYear</td>
+                        <td>@row.BuildingName</td>
+                        <td class="fw-semibold">@row.RoomNumber</td>
+                        <td class="small text-muted">@(row.RoomType ?? "-")</td>
+                        <td class="small">@row.CheckInDate.ToString("dd/MM/yyyy")</td>
+                        <td class="small">@(row.CheckOutDate?.ToString("dd/MM/yyyy") ?? "-")</td>
+                        <td>
+                            @if (row.HousingStatus == "Active")
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else if (row.HousingStatus == "CheckedOut")
+                            {
+                                <span class="badge bg-secondary">Checked Out</span>
+                            }
+                            else if (row.HousingStatus == "Transferred")
+                            {
+                                <span class="badge bg-info">Transferred</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">@row.HousingStatus</span>
+                            }
+                        </td>
+                    </tr>
+                }
+                @if (!Model.Rows.Any())
+                {
+                    <tr>
+                        <td colspan="10" class="text-center text-muted py-4">No housing records match the selected criteria.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

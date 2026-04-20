@@ -1,0 +1,50 @@
+@model IEnumerable<AuditLog>
+@{
+    ViewData["Title"] = "Audit Log";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h3 class="fw-bold mb-0">Audit Log</h3>
+        <p class="text-muted mb-0">System activity and operation logs</p>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>Reports
+    </a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Time</th>
+                    <th>User</th>
+                    <th>Action</th>
+                    <th>Module</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var log in Model)
+                {
+                    <tr>
+                        <td class="small">@log.ActionTime.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@log.User?.FullName</td>
+                        <td>
+                            <span class="badge @(log.Action == "Create" ? "bg-success" : log.Action == "Delete" ? "bg-danger" : "bg-info")">
+                                @log.Action
+                            </span>
+                        </td>
+                        <td>@log.ModuleName</td>
+                        <td class="small text-muted">@log.Description</td>
+                    </tr>
+                }
+                @if (!Model.Any())
+                {
+                    <tr><td colspan="5" class="text-center text-muted py-4">No audit records.</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

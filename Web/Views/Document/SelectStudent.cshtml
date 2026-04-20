@@ -1,0 +1,52 @@
+@{
+    ViewData["Title"] = "Documents";
+    var students = ViewBag.Students as IEnumerable<Student> ?? new List<Student>();
+}
+
+<div class="mb-4">
+    <h3 class="fw-bold mb-0">Documents</h3>
+    <p class="text-muted">Select a student for document management</p>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Student No</th>
+                    <th>Full Name</th>
+                    <th>Program</th>
+                    <th class="text-center">Year</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var s in students)
+                {
+                    <tr>
+                        <td class="fw-semibold">@s.StudentNumber</td>
+                        <td>@s.FullName</td>
+                        <td class="small text-muted">@s.Program</td>
+                        <td class="text-center">@s.Year</td>
+                        <td>
+                            @if (s.Status == "Active")
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">@s.Status</span>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="Index" asp-route-studentId="@s.StudentId" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-folder2-open me-1"></i>Documents
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

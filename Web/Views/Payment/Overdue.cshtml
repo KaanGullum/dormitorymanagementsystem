@@ -1,0 +1,38 @@
+@model IEnumerable<Payment>
+@{
+    ViewData["Title"] = "Overdue Payments";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold mb-0 text-danger"><i class="bi bi-exclamation-triangle me-2"></i>Overdue Payments</h3>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back</a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead class="table-light">
+                <tr><th>Student</th><th>Amount</th><th>Due Date</th><th>Days Overdue</th><th>Action</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    var daysOverdue = (DateTime.Now - p.DueDate).Days;
+                    <tr>
+                        <td>@p.Student?.FullName</td>
+                        <td class="fw-semibold text-danger">TL @p.Amount.ToString("N0")</td>
+                        <td>@p.DueDate.ToString("dd/MM/yyyy")</td>
+                        <td><span class="badge bg-danger">@daysOverdue days</span></td>
+                        <td>
+                            <form asp-action="RecordPayment" method="post" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="paymentId" value="@p.PaymentId" />
+                                <button type="submit" class="btn btn-sm btn-success"><i class="bi bi-check-lg me-1"></i>Pay</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

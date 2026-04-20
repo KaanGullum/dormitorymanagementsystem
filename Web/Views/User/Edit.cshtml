@@ -1,0 +1,48 @@
+@model UserFormViewModel
+@{
+    ViewData["Title"] = Model.IsEdit ? "Edit User" : "New User";
+}
+
+<h3 class="fw-bold mb-4">@(Model.IsEdit ? "Edit User" : "Create New User")</h3>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <form asp-action="@(Model.IsEdit ? "Edit" : "Create")" method="post">
+            @Html.AntiForgeryToken()
+            @if (Model.IsEdit)
+            {
+                <input type="hidden" asp-for="User.UserId" />
+                <input type="hidden" asp-for="User.PasswordHash" />
+            }
+            <input type="hidden" asp-for="IsEdit" />
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
+                    <input asp-for="User.FullName" class="form-control" required />
+                    <span asp-validation-for="User.FullName" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Username <span class="text-danger">*</span></label>
+                    <input asp-for="User.Username" class="form-control" required />
+                    <span asp-validation-for="User.Username" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Role <span class="text-danger">*</span></label>
+                    <select asp-for="User.RoleId" class="form-select">
+                        @foreach (var role in Model.Roles)
+                        {
+                            <option value="@role.RoleId">@role.RoleName - @role.Description</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle me-1"></i>@(Model.IsEdit ? "Update" : "Create")</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

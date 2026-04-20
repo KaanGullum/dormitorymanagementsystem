@@ -1,0 +1,43 @@
+@{
+    ViewData["Title"] = "Welcome";
+}
+
+@* Student-specific welcome panel *@
+
+<div class="mb-4">
+    <h3 class="fw-bold mb-0">Welcome, @User.Identity?.Name</h3>
+    <p class="text-muted">You are logged in to the dormitory management system as a student</p>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center py-4">
+                <i class="bi bi-door-open display-4 text-primary mb-3 d-block"></i>
+                <h6 class="fw-bold">Rooms</h6>
+                <p class="text-muted small">View available rooms and occupancy in the dormitory</p>
+                <a asp-controller="Room" asp-action="Index" class="btn btn-outline-primary btn-sm">View Rooms</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body text-center py-4">
+                <i class="bi bi-tools display-4 text-warning mb-3 d-block"></i>
+                <h6 class="fw-bold">Maintenance Requests</h6>
+                <p class="text-muted small">Create a maintenance request if you have an issue in your room</p>
+                <a asp-controller="Maintenance" asp-action="Index" class="btn btn-outline-warning btn-sm">Go to Maintenance</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm mt-4">
+    <div class="card-body">
+        <h6 class="fw-bold mb-3"><i class="bi bi-info-circle me-2"></i>Information</h6>
+        <p class="text-muted mb-0 small">
+            With your student account, you can only access basic dormitory information and create maintenance requests.
+            Please contact dormitory management for information about your payments, documents, or penalty records.
+        </p>
+    </div>
+</div>

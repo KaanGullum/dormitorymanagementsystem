@@ -1,0 +1,60 @@
+@model PenaltyFormViewModel
+@{
+    ViewData["Title"] = "New Penalty";
+}
+
+<div class="mb-4">
+    <h3 class="fw-bold mb-0">New Penalty</h3>
+    <p class="text-muted">Create a new penalty record for a student</p>
+</div>
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Penalty.StudentId" class="form-label">Student</label>
+                        <select asp-for="Penalty.StudentId" class="form-select">
+                            <option value="">-- Select a student --</option>
+                            @foreach (var s in Model.Students)
+                            {
+                                <option value="@s.StudentId">@s.StudentNumber - @s.FullName (@s.Program)</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Penalty.StudentId" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Penalty.Reason" class="form-label">Penalty Reason</label>
+                        <textarea asp-for="Penalty.Reason" class="form-control" rows="3" placeholder="e.g. Noise, late payment..."></textarea>
+                        <span asp-validation-for="Penalty.Reason" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Penalty.Amount" class="form-label">Amount (TL)</label>
+                            <input asp-for="Penalty.Amount" type="number" step="0.01" class="form-control" />
+                            <span asp-validation-for="Penalty.Amount" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Penalty.DueDate" class="form-label">Due Date</label>
+                            <input asp-for="Penalty.DueDate" type="date" class="form-control" />
+                            <span asp-validation-for="Penalty.DueDate" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i>Create
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

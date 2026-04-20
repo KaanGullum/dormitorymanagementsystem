@@ -1,0 +1,140 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Overview Dashboard";
+}
+
+@*
+    Report Section 5 - Fig 5.1: Overview Dashboard
+    Cards: Active Students | Occupancy Rate | Collected Fees | Open Requests
+    Left chart: "Occupancy by Building" (bar chart - A, B, C, D)
+    Right chart: "Payment Status" (donut chart - Paid, Pending, Overdue)
+*@
+
+<div class="mb-4">
+    <h3 class="fw-bold mb-0">Overview Dashboard</h3>
+    <p class="text-muted">Operational summary of the dormitory</p>
+</div>
+
+@* Report Fig 5.1: 4 KPI Cards *@
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <p class="text-muted small mb-1">Active Students</p>
+                <h3 class="fw-bold mb-0">@Model.ActiveStudents.ToString("N0")</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <p class="text-muted small mb-1">Occupancy Rate</p>
+                <h3 class="fw-bold mb-0">@Model.OccupancyRate%</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <p class="text-muted small mb-1">Collected Fees</p>
+                <h3 class="fw-bold mb-0">TL @(Model.CollectedFees >= 1000000 ? (Model.CollectedFees / 1000000).ToString("0.##") + "M" : Model.CollectedFees.ToString("N0"))</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <p class="text-muted small mb-1">Open Requests</p>
+                <h3 class="fw-bold mb-0">@Model.OpenRequests</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Report Fig 5.1: Charts row *@
+<div class="row g-3">
+    <div class="col-md-7">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h6 class="fw-semibold mb-3">Occupancy by Building</h6>
+                <canvas id="occupancyChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-5">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h6 class="fw-semibold mb-3">Payment Status</h6>
+                <canvas id="paymentChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Occupancy by Building - bar chart (A, B, C, D buildings)
+        const occupancyCtx = document.getElementById('occupancyChart').getContext('2d');
+        new Chart(occupancyCtx, {
+            type: 'bar',
+            data: {
+                labels: [@Html.Raw(string.Join(",", Model.OccupancyByBuilding.Keys.Select(k => $"'{k}'")))],
+                datasets: [{
+                    label: 'Occupancy %',
+                    data: [@string.Join(",", Model.OccupancyByBuilding.Values)],
+                    backgroundColor: 'rgba(54, 90, 169, 0.8)',
+                    borderRadius: 6,
+                    barThickness: 40
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, max: 100, ticks: { callback: v => v + '%' } }
+                }
+            }
+        });
+
+        // Payment Status - donut chart
+        const paymentCtx = document.getElementById('paymentChart').getContext('2d');
+        const paymentData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.PaymentStatusDistribution));
+        const total = Object.values(paymentData).reduce((a, b) => a + b, 0);
+        const paidPct = total > 0 ? Math.round((paymentData['Paid'] || 0) / total * 100) : 0;
+
+        new Chart(paymentCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Paid', 'Pending', 'Overdue'],
+                datasets: [{
+                    data: [paymentData['Paid'] || 0, paymentData['Pending'] || 0, paymentData['Overdue'] || 0],
+                    backgroundColor: ['#28a745', '#ffc107', '#dc3545'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                cutout: '65%',
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            },
+            plugins: [{
+                id: 'centerText',
+                beforeDraw: function(chart) {
+                    const ctx = chart.ctx;
+                    const centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+                    const centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+                    ctx.save();
+                    ctx.font = 'bold 24px sans-serif';
+                    ctx.fillStyle = '#28a745';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(paidPct + '%', centerX, centerY);
+                    ctx.restore();
+                }
+            }]
+        });
+    </script>
+}

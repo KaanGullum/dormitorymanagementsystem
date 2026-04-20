@@ -1,0 +1,74 @@
+@model StudentFormViewModel
+@{
+    ViewData["Title"] = Model.IsEdit ? "Edit Student" : "New Student";
+}
+
+<h3 class="fw-bold mb-4">@(Model.IsEdit ? "Edit Student" : "Register New Student")</h3>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <form asp-action="@(Model.IsEdit ? "Edit" : "Create")" method="post">
+            @Html.AntiForgeryToken()
+
+            @if (Model.IsEdit)
+            {
+                <input type="hidden" asp-for="Student.StudentId" />
+            }
+            <input type="hidden" asp-for="IsEdit" />
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Student Number <span class="text-danger">*</span></label>
+                    <input asp-for="Student.StudentNumber" class="form-control" required />
+                    <span asp-validation-for="Student.StudentNumber" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
+                    <input asp-for="Student.FullName" class="form-control" required />
+                    <span asp-validation-for="Student.FullName" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
+                    <input asp-for="Student.Email" type="email" class="form-control" required />
+                    <span asp-validation-for="Student.Email" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Phone</label>
+                    <input asp-for="Student.Phone" class="form-control" />
+                    <span asp-validation-for="Student.Phone" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">Program <span class="text-danger">*</span></label>
+                    <input asp-for="Student.Program" class="form-control" placeholder="e.g. Computer Engineering" required />
+                    <span asp-validation-for="Student.Program" class="text-danger small"></span>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold">Year <span class="text-danger">*</span></label>
+                    <select asp-for="Student.Year" class="form-select">
+                        @for (int y = 1; y <= 6; y++)
+                        {
+                            <option value="@y">@y</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold">Status</label>
+                    <select asp-for="Student.Status" class="form-select">
+                        <option value="Active">Active</option>
+                        <option value="Left">Left</option>
+                        <option value="Suspended">Suspended</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle me-1"></i>@(Model.IsEdit ? "Update" : "Save")
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
